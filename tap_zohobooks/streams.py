@@ -2128,6 +2128,7 @@ class ProfitAndLossStream(ZohoBooksStream):
         th.Property("name", th.StringType),
         th.Property("previous_total", th.CustomType({"type": ["array", "string"]})),
     ).to_dict()
+
 class ReportAccountTransactionsStream(ZohoBooksStream):
     name = "report_account_transactions"
     path = "/reports/accounttransaction"
@@ -2162,6 +2163,61 @@ class ReportAccountTransactionsStream(ZohoBooksStream):
         th.Property("reporting_tag", th.StringType),
         th.Property("branch", th.CustomType({"type": ["object", "string"]})),
     ).to_dict()
+
+class AdvancedAccountTransactionsStream(ZohoBooksStream):
+    name = "advanced_account_transactions"
+    path = "/reports/accounttransaction"
+    primary_keys = None
+    replication_key = None
+    records_jsonpath: str = "$.account_transactions[:1].account_transactions[*]"
+    parent_stream_type = OrganizationIdStream
+
+    schema = th.PropertiesList(
+        th.Property("date", th.DateTimeType),
+        th.Property("account_name", th.StringType),
+        th.Property("transaction_details", th.StringType),
+        th.Property("transaction_id", th.StringType),
+        th.Property("reference_transaction_id", th.StringType),
+        th.Property("offset_account_id", th.StringType),
+        th.Property("offset_account_type", th.StringType),
+        th.Property("transaction_type", th.StringType),
+        th.Property("reference_number", th.StringType),
+        th.Property("entity_number", th.StringType),
+        th.Property("debit", th.StringType),
+        th.Property("credit", th.StringType),
+        th.Property("net_amount", th.StringType),
+        th.Property("contact_id", th.StringType),
+        th.Property("account_id", th.StringType),
+        th.Property("project_ids", th.StringType),
+        th.Property("currency_code", th.StringType),
+        th.Property("account", th.ObjectType(
+            th.Property("account_group", th.StringType),
+            th.Property("account_type", th.StringType),
+        )),
+        th.Property("reporting_tag", th.StringType),
+        th.Property("branch", th.CustomType({"type": ["object", "string"]})),
+        th.Property("group_name", th.StringType),
+        th.Property("group_name_formatted", th.StringType),
+    ).to_dict()
+
+    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
+        return {
+            "organization_id": record["organization_id"],
+        }
+
+    def get_url_params(self, context, next_page_token):
+        metadata_base_url = self.url_base + "/reports/metadata?entity_type=account_transactions&switch_name_to_id=true&organization_id=" + context.get("organization_id")
+        records = list(extract_jsonpath(self.records_jsonpath, input=response.json()))
+
+        self.logger.info("metadata:")
+        self.logger.info(records)
+
+        record_ids = OrderedDict((record.get("entity_details"), record) for record in records)
+        
+        self.logger.info(record_ids)
+
+        return super().get_url_params(context, next_page_token)
+
 
 class ProfitAndLossCashStream(ProfitAndLossStream):
     name = "profit_and_loss_cash_based"
