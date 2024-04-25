@@ -2206,15 +2206,25 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         }
 
     def get_url_params(self, context, next_page_token):
-        metadata_base_url = self.url_base + "/reports/metadata?entity_type=account_transactions&switch_name_to_id=true&organization_id=" + context.get("organization_id")
-        records = list(extract_jsonpath(self.records_jsonpath, input=response.json()))
+        metadata_base_url = self.url_base + "/reports/metadata"
+        params = {
+            "organization_id": context.get("organization_id"),
+            "switch_name_to_id": "true",
+            "entity_type": "account_transactions"
+        }
 
-        self.logger.info("metadata:")
-        self.logger.info(records)
+        self.logger.info(params)
 
-        record_ids = OrderedDict((record.get("entity_details"), record) for record in records)
-        
-        self.logger.info(record_ids)
+        req = requests.Request(
+            "GET",
+            metadata_base_url,
+            params=params,
+            headers=self.authenticator.auth_headers
+        )
+        detail_response = self._request(req.prepare())
+
+        self.logger.info("metadata fields")
+        self.logger.info(detail_response)
 
         return super().get_url_params(context, next_page_token)
 
