@@ -2184,7 +2184,7 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         th.Property("reference_number", th.StringType),
         th.Property("entity_number", th.StringType),
         th.Property("debit", th.NumberType),
-        th.Property("credit", th.NumberType),
+        th.Property("credit", th.StringType),
         th.Property("net_amount", th.NumberType),
         th.Property("contact_id", th.StringType),
         th.Property("account_id", th.StringType),
