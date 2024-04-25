@@ -2202,7 +2202,7 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
 
     def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
         return {
-            "organization_id": record["organization_id"],
+            "organization_id": context.get("organization_id"),
         }
 
     def get_url_params(self, context, next_page_token):
