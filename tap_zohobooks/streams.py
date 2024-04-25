@@ -2223,8 +2223,10 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         )
         detail_response = self._request(req.prepare())
 
-        self.logger.info("metadata fields")
-        self.logger.info(detail_response)
+        field_details = extract_jsonpath(self.records_jsonpath, input=detail_response.json())
+
+        self.logger.info("metadatafields")
+        self.logger.info(field_details)
 
         return super().get_url_params(context, next_page_token)
 
