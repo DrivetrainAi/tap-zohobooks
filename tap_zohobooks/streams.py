@@ -1,6 +1,5 @@
 """Stream type classes for tap-zohobooks."""
 import requests
-import json
 
 from collections import OrderedDict
 
@@ -2221,15 +2220,15 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             headers=self.authenticator.auth_headers
         )
         detail_response = self._request(req.prepare())
-        meta_data = json.loads(detail_response)
+        meta_data = extract_jsonpath("$.entity_fields[*]", input=detail_response.json())
         regions = []
         products = []
         
-        for entity_field in meta_data['entity_fields']:
-            if entity_field.get('field_name_formatted') == "Region":
-                regions = [(item['name'], item['id']) for item in entity_field['values']]
-            elif entity_field.get('field_name_formatted') == "Product":
-                products = [(item['name'], item['id']) for item in entity_field['values']]
+        for row in meta_data:
+            if row.get('field_name_formatted') == "Region":
+                regions = [(item['name'], item['id']) for item in row['values']]
+            elif row.get('field_name_formatted') == "Product":
+                products = [(item['name'], item['id']) for item in row['values']]
         
         print("Regions:")
         for name, id in regions:
@@ -2238,8 +2237,6 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         print("\nProducts:")
         for name, id in products:
             print(f"Name: {name}, ID: {id}")
-
-        field_details = extract_jsonpath(self.records_jsonpath, input=detail_response.json())
 
         return super().get_url_params(context, next_page_token)
 
