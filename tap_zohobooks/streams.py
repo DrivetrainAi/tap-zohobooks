@@ -2234,21 +2234,20 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
 
         return super().get_url_params(context, next_page_token)
 
-     def parse_response(self, response):
-         (self, row: dict, context: Optional[dict] = None) -> Optional[dict]:
-         for row in response.json():
+    def parse_response(self, response):
+        for row in response.json():
             if "debit" in row:
                 try:
                     row['debit'] = str(row['debit'])
                 except:
                     row['debit'] = 0
+                    
             if "credit" in row:
                 try:
                     row['credit'] = str(row['credit'])
                 except:
                     row['credit'] = 0
                 
-
 
 class ProfitAndLossCashStream(ProfitAndLossStream):
     name = "profit_and_loss_cash_based"
