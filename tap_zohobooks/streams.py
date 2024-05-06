@@ -2221,7 +2221,7 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             headers=self.authenticator.auth_headers
         )
         detail_response = self._request(req.prepare())
-        meta_data = json.loads(detail_reponse)
+        meta_data = json.loads(detail_response)
         regions = []
         products = []
         
