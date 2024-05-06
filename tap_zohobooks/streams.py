@@ -1,6 +1,5 @@
 """Stream type classes for tap-zohobooks."""
 import requests
-import json
 
 from collections import OrderedDict
 
@@ -2220,8 +2219,9 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             params=params,
             headers=self.authenticator.auth_headers
         )
+        self.logger.info(f"meta data for the reports started")
         detail_response = self._request(req.prepare())
-        meta_data = json.loads(detail_response)
+        meta_data = detail_response.json()
         regions = []
         products = []
         self.logger.info(f"meta data for the reports - {meta_data} ")
