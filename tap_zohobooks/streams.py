@@ -2220,14 +2220,22 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             headers=self.authenticator.auth_headers
         )
         detail_response = self._request(req.prepare())
-
-        meta_details = extract_jsonpath(self.records_jsonpath, input=detail_response.json())
-        name_id_pairs = []
-        for entity_field in meta_details['entity_fields']:
-            if entity_field.get('field_name_formatted') in ["Region", "Product"]:
-                name_id_pairs.extend([(item['name'], item['id']) for item in entity_field['values']])
+        meta_data = json.loads(detail_reponse)
+        regions = []
+        products = []
         
-        for name, id in name_id_pairs:
+        for entity_field in meta_data['entity_fields']:
+            if entity_field.get('field_name_formatted') == "Region":
+                regions = [(item['name'], item['id']) for item in entity_field['values']]
+            elif entity_field.get('field_name_formatted') == "Product":
+                products = [(item['name'], item['id']) for item in entity_field['values']]
+        
+        print("Regions:")
+        for name, id in regions:
+            print(f"Name: {name}, ID: {id}")
+        
+        print("\nProducts:")
+        for name, id in products:
             print(f"Name: {name}, ID: {id}")
 
         field_details = extract_jsonpath(self.records_jsonpath, input=detail_response.json())
