@@ -2219,34 +2219,33 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             params=params,
             headers=self.authenticator.auth_headers
         )
-        self.logger.info(f"meta data for the reports started")
         detail_response = self._request(req.prepare())
         meta_data = detail_response.json()
         branches = []
-        self.logger.info(f"meta data for the reports - {meta_data} ")
         for row in meta_data['entity_fields']:
             if row.get('field_name_formatted') == 'Branch':
                 branches = [(item['name'], item['id']) for item in row['values']]
         
-        self.logger.info(f"Branches: {branches}")
         for name, id in branches:
             self.logger.info(f"Name: {name}, ID: {id}")
 
         return super().get_url_params(context, next_page_token)
 
     def parse_response(self, response):
-        for row in response.json():
-            if "debit" in row:
-                try:
-                    row['debit'] = str(row['debit'])
-                except:
-                    row['debit'] = 0
-                    
-            if "credit" in row:
-                try:
-                    row['credit'] = str(row['credit'])
-                except:
-                    row['credit'] = 0
+        self.logger.info(response.json())
+        if response.json() is not None:
+            for row in response.json():
+                if "debit" in row:
+                    try:
+                        row['debit'] = str(row['debit'])
+                    except:
+                        row['debit'] = 0
+                        
+                if "credit" in row:
+                    try:
+                        row['credit'] = str(row['credit'])
+                    except:
+                        row['credit'] = 0
                 
 
 class ProfitAndLossCashStream(ProfitAndLossStream):
