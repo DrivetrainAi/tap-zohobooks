@@ -2212,9 +2212,7 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             "switch_name_to_id": "true",
             "entity_type": "account_transactions"
         }
-
-        self.logger.info(params)
-
+        
         req = requests.Request(
             "GET",
             metadata_base_url,
@@ -2223,10 +2221,16 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         )
         detail_response = self._request(req.prepare())
 
-        field_details = extract_jsonpath(self.records_jsonpath, input=detail_response.json())
+        meta_details = extract_jsonpath(self.records_jsonpath, input=detail_response.json())
+        name_id_pairs = []
+        for entity_field in meta_details['entity_fields']:
+            if entity_field.get('field_name_formatted') in ["Region", "Product"]:
+                name_id_pairs.extend([(item['name'], item['id']) for item in entity_field['values']])
+        
+        for name, id in name_id_pairs:
+            print(f"Name: {name}, ID: {id}")
 
-        self.logger.info("metadatafields")
-        self.logger.info(field_details)
+        field_details = extract_jsonpath(self.records_jsonpath, input=detail_response.json())
 
         return super().get_url_params(context, next_page_token)
 
