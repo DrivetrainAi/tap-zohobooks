@@ -2223,18 +2223,18 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         meta_data = extract_jsonpath("$.entity_fields[*]", input=detail_response.json())
         regions = []
         products = []
-        self.logger.info("meta data for the reports")
+        self.logger.info(f"meta data for the reports - {meta_data} ")
         for row in meta_data:
-            if row.get('field_name_formatted') == "Region":
+            if row.get('field_name_formatted') == 'Region':
                 regions = [(item['name'], item['id']) for item in row['values']]
-            elif row.get('field_name_formatted') == "Product":
+            elif row.get('field_name_formatted') == 'Product':
                 products = [(item['name'], item['id']) for item in row['values']]
         
-        self.logger.info("Regions:")
+        self.logger.info(f"Regions: {regions}")
         for name, id in regions:
             self.logger.info(f"Name: {name}, ID: {id}")
         
-        self.logger.info("\nProducts:")
+        self.logger.info(f"Products: {products}")
         for name, id in products:
             self.logger.info(f"Name: {name}, ID: {id}")
 
