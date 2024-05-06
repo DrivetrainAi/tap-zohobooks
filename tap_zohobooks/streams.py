@@ -2222,21 +2222,14 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         self.logger.info(f"meta data for the reports started")
         detail_response = self._request(req.prepare())
         meta_data = detail_response.json()
-        regions = []
-        products = []
+        branches = []
         self.logger.info(f"meta data for the reports - {meta_data} ")
         for row in meta_data['entity_fields']:
-            if row.get('field_name_formatted') == 'Region':
-                regions = [(item['name'], item['id']) for item in row['values']]
-            elif row.get('field_name_formatted') == 'Product':
-                products = [(item['name'], item['id']) for item in row['values']]
+            if row.get('field_name_formatted') == 'Branch':
+                branches = [(item['name'], item['id']) for item in row['values']]
         
-        self.logger.info(f"Regions: {regions}")
-        for name, id in regions:
-            self.logger.info(f"Name: {name}, ID: {id}")
-        
-        self.logger.info(f"Products: {products}")
-        for name, id in products:
+        self.logger.info(f"Branches: {branches}")
+        for name, id in branches:
             self.logger.info(f"Name: {name}, ID: {id}")
 
         return super().get_url_params(context, next_page_token)
