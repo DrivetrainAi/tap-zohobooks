@@ -2184,7 +2184,7 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
         th.Property("reference_number", th.StringType),
         th.Property("entity_number", th.StringType),
         th.Property("debit", th.CustomType({"type": ["number", "string"]})),
-        th.Property("credit", th.StringType),
+        th.Property("credit", th.CustomType({"type": ["number", "string"]})),
         th.Property("net_amount", th.StringType),
         th.Property("contact_id", th.StringType),
         th.Property("account_id", th.StringType),
@@ -2230,22 +2230,6 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             self.logger.info(f"Name: {name}, ID: {id}")
 
         return super().get_url_params(context, next_page_token)
-
-    def parse_response(self, response):
-        self.logger.info(response.json())
-        if response.json() is not None:
-            for row in response.json():
-                if "debit" in row:
-                    try:
-                        row['debit'] = str(row['debit'])
-                    except:
-                        row['debit'] = 0
-                        
-                if "credit" in row:
-                    try:
-                        row['credit'] = str(row['credit'])
-                    except:
-                        row['credit'] = 0
                 
 
 class ProfitAndLossCashStream(ProfitAndLossStream):
