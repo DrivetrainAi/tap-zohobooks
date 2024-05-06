@@ -1,5 +1,6 @@
 """Stream type classes for tap-zohobooks."""
 import requests
+import json
 
 from collections import OrderedDict
 
