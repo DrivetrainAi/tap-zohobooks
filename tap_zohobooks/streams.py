@@ -1,5 +1,6 @@
 """Stream type classes for tap-zohobooks."""
 import requests
+import json
 
 from collections import OrderedDict
 
@@ -2220,11 +2221,11 @@ class AdvancedAccountTransactionsStream(ZohoBooksStream):
             headers=self.authenticator.auth_headers
         )
         detail_response = self._request(req.prepare())
-        meta_data = extract_jsonpath("$.entity_fields[*]", input=detail_response.json())
+        meta_data = json.loads(detail_response)
         regions = []
         products = []
         self.logger.info(f"meta data for the reports - {meta_data} ")
-        for row in meta_data:
+        for row in meta_data['entity_fields']:
             if row.get('field_name_formatted') == 'Region':
                 regions = [(item['name'], item['id']) for item in row['values']]
             elif row.get('field_name_formatted') == 'Product':
