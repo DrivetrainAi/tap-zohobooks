@@ -140,7 +140,7 @@ class ZohoBooksStream(RESTStream):
             start_date = ":".join(splited_start_date[:-1]) + splited_start_date[-1]
             params["last_modified_time"] = start_date
         # Params for reports    
-        if self.name in ["profit_and_loss","report_account_transactions","profit_and_loss_cash_based","report_account_transactions_cash_based","advanced_account_transactions"]:
+        if self.name in ["profit_and_loss","report_account_transactions","profit_and_loss_cash_based","report_account_transactions_cash_based"]:
             params = {}
             if next_page_token:
                 params["page"] = next_page_token
@@ -154,6 +154,10 @@ class ZohoBooksStream(RESTStream):
             params['to_date'] = last_day_of_month.strftime("%Y-%m-%d")
             if self.name in ["profit_and_loss_cash_based","report_account_transactions_cash_based"]:
                 params["cash_based"] = True
+        
+        if self.name in ["profit_and_loss","report_account_transactions","profit_and_loss_cash_based","report_account_transactions_cash_based"]:
+            params = {}
+            params['filter_by'] = 'AccountType.All'
         return params
 
     def backoff_wait_generator(self) -> Generator[float, None, None]:
