@@ -155,9 +155,6 @@ class ZohoBooksStream(RESTStream):
             if self.name in ["profit_and_loss_cash_based","report_account_transactions_cash_based"]:
                 params["cash_based"] = True
         
-        if self.name in ["profit_and_loss","report_account_transactions","profit_and_loss_cash_based","report_account_transactions_cash_based"]:
-            params = {}
-            params['filter_by'] = 'AccountType.All'
         return params
 
     def backoff_wait_generator(self) -> Generator[float, None, None]:
