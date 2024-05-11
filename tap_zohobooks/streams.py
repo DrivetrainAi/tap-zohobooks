@@ -164,7 +164,7 @@ class JournalStream(ZohoBooksStream):
 
 class ChartOfAccountsStream(ZohoBooksStream):
     name = "chart_of_accounts"
-    path = "/chartofaccounts"
+    path = "/chartofaccounts?filter_by=AccountType.All"
     primary_keys = ["account_id"]
     replication_key = "last_modified_time"
     records_jsonpath: str = "$.chartofaccounts[*]"
