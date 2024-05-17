@@ -2071,7 +2071,7 @@ class VendorCreditIDSStream(ZohoBooksStream):
     parent_stream_type = OrganizationIdStream
 
     schema = th.PropertiesList(
-        th.Property("vendorcredit_id", th.StringType),
+        th.Property("vendor_credit_id", th.StringType),
         th.Property("last_modified_time", th.DateTimeType),
     ).to_dict()
 
