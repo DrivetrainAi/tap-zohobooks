@@ -2059,9 +2059,6 @@ class CreditNoteDetailsStream(ZohoBooksStream):
         th.Property("last_modified_time", th.DateTimeType),
     ).to_dict()
 
-
-
-
 class VendorCreditIDSStream(ZohoBooksStream):
     name = "vendor_credit_ids_stream"
     path = "/vendorcredits"
@@ -2072,6 +2069,7 @@ class VendorCreditIDSStream(ZohoBooksStream):
 
     schema = th.PropertiesList(
         th.Property("vendor_credit_id", th.StringType),
+        th.Property("updated_time", th.DateTimeType),
         th.Property("last_modified_time", th.DateTimeType),
     ).to_dict()
 
@@ -2086,11 +2084,11 @@ class VendorCreditDetailsStream(ZohoBooksStream):
     name = "vendor_credit_details"
     path = "/vendorcredits/{vendor_credit_id}"
     primary_keys = ["vendor_credit_id"]
-    replication_key = "last_modified_time"
-    records_jsonpath: str = "$.vendor_credit[*]"
+    records_jsonpath: str = "$.vendor_credit"
     parent_stream_type = VendorCreditIDSStream
 
-    schema = th.PropertiesList(
+
+    schema = th.ObjectType(
         th.Property("vendor_id", th.StringType),
         th.Property("currency_id", th.StringType),
         th.Property("tds_calculation_type", th.StringType),
@@ -2103,6 +2101,8 @@ class VendorCreditDetailsStream(ZohoBooksStream):
         th.Property("total_credits_used", th.NumberType),
         th.Property("total_refunded_amount", th.NumberType),
         th.Property("balance", th.NumberType),
+        th.Property("updated_time", th.DateTimeType),
+        th.Property("last_modified_time", th.DateTimeType),
         th.Property("pricebook_id", th.StringType),
         th.Property("reference_number", th.StringType),
         th.Property("is_discount_before_tax", th.BooleanType),
