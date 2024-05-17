@@ -2067,29 +2067,29 @@ class CreditNoteDetailsStream(ZohoBooksStream):
 class VendorCreditIDSStream(ZohoBooksStream):
     name = "vendor_credit_ids_stream"
     path = "/vendorcredits"
-    primary_keys = ["vendorcredit_id"]
-    replication_key = "updated_time"
-    records_jsonpath: str = "$.vendorcredits[*]"
+    primary_keys = ["vendor_credit_id"]
+    replication_key = "last_modified_time"
+    records_jsonpath: str = "$.vendor_credits[*]"
     parent_stream_type = OrganizationIdStream
 
     schema = th.PropertiesList(
         th.Property("vendorcredit_id", th.StringType),
-        th.Property("updated_time", th.DateTimeType),
+        th.Property("last_modified_time", th.DateTimeType),
     ).to_dict()
 
     def get_child_context(self, record, context):
         return {
-            "vendorcredit_id": record["vendorcredit_id"],
+            "vendor_credit_id": record["vendor_credit_id"],
             "organization_id": context.get("organization_id"),
         }
 
 
 class VendorCreditDetailsStream(ZohoBooksStream):
     name = "vendor_credit_details"
-    path = "/vendorcredits/{vendorcredit_id}"
-    primary_keys = ["vendorcredit_id"]
-    replication_key = "updated_time"
-    records_jsonpath: str = "$.vendorcredit[*]"
+    path = "/vendorcredits/{vendor_credit_id}"
+    primary_keys = ["vendor_credit_id"]
+    replication_key = "last_modified_time"
+    records_jsonpath: str = "$.vendor_credit[*]"
     parent_stream_type = VendorCreditIDSStream
 
     schema = th.PropertiesList(
