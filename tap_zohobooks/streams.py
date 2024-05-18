@@ -2089,6 +2089,8 @@ class VendorCreditDetailsStream(ZohoBooksStream):
 
 
     schema = th.ObjectType(
+        th.Property("vendor_credit_id", th.StringType),
+        th.Property("vendor_name", th.StringType),
         th.Property("vendor_id", th.StringType),
         th.Property("currency_id", th.StringType),
         th.Property("tds_calculation_type", th.StringType),
