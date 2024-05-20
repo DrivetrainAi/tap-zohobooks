@@ -166,7 +166,6 @@ class ChartOfAccountsStream(ZohoBooksStream):
     name = "chart_of_accounts"
     path = "/chartofaccounts?filter_by=AccountType.All"
     primary_keys = ["account_id"]
-    replication_key = "last_modified_time"
     records_jsonpath: str = "$.chartofaccounts[*]"
     parent_stream_type = OrganizationIdStream
 
@@ -1813,7 +1812,6 @@ class AccountTransactionsStream(ZohoBooksStream):
     name = "account_transactions"
     path = "/chartofaccounts/transactions"
     primary_keys = ["transaction_id"]
-    replication_key = "transaction_date"
     records_jsonpath: str = "$.transactions[*]"
     parent_stream_type = ChartOfAccountsStream
 
@@ -2061,51 +2059,55 @@ class CreditNoteDetailsStream(ZohoBooksStream):
         th.Property("last_modified_time", th.DateTimeType),
     ).to_dict()
 
-
-
-
 class VendorCreditIDSStream(ZohoBooksStream):
     name = "vendor_credit_ids_stream"
     path = "/vendorcredits"
-    primary_keys = ["vendorcredit_id"]
-    replication_key = "updated_time"
-    records_jsonpath: str = "$.vendorcredits[*]"
+    primary_keys = ["vendor_credit_id"]
+    replication_key = "last_modified_time"
+    records_jsonpath: str = "$.vendor_credits[*]"
     parent_stream_type = OrganizationIdStream
 
     schema = th.PropertiesList(
-        th.Property("vendorcredit_id", th.StringType),
+        th.Property("vendor_credit_id", th.StringType),
         th.Property("updated_time", th.DateTimeType),
+        th.Property("last_modified_time", th.DateTimeType),
     ).to_dict()
 
     def get_child_context(self, record, context):
         return {
-            "vendorcredit_id": record["vendorcredit_id"],
+            "vendor_credit_id": record["vendor_credit_id"],
             "organization_id": context.get("organization_id"),
         }
 
 
 class VendorCreditDetailsStream(ZohoBooksStream):
     name = "vendor_credit_details"
-    path = "/vendorcredits/{vendorcredit_id}"
-    primary_keys = ["vendorcredit_id"]
-    replication_key = "updated_time"
-    records_jsonpath: str = "$.vendorcredit[*]"
+    path = "/vendorcredits/{vendor_credit_id}"
+    primary_keys = ["vendor_credit_id"]
+    records_jsonpath: str = "$.vendor_credit"
     parent_stream_type = VendorCreditIDSStream
 
-    schema = th.PropertiesList(
+
+    schema = th.ObjectType(
+        th.Property("vendor_credit_id", th.StringType),
+        th.Property("vendor_name", th.StringType),
         th.Property("vendor_id", th.StringType),
         th.Property("currency_id", th.StringType),
-        th.Property("vat_treatment", th.StringType),
+        th.Property("tds_calculation_type", th.StringType),
         th.Property("vendor_credit_number", th.StringType),
-        th.Property("gst_treatment", th.StringType),
-        th.Property("tax_treatment", th.StringType),
-        th.Property("gst_no", th.StringType),
-        th.Property("source_of_supply", th.StringType),
-        th.Property("destination_of_supply", th.StringType),
-        th.Property("place_of_supply", th.StringType),
+        th.Property("tax_rounding", th.StringType),
+        th.Property("adjustment_description", th.StringType),
+        th.Property("contact_category", th.StringType),
+        th.Property("comments", th.CustomType({"type": ["array", "string"]})),
+        th.Property("total", th.NumberType),
+        th.Property("total_credits_used", th.NumberType),
+        th.Property("total_refunded_amount", th.NumberType),
+        th.Property("balance", th.NumberType),
+        th.Property("updated_time", th.DateTimeType),
+        th.Property("last_modified_time", th.DateTimeType),
         th.Property("pricebook_id", th.StringType),
         th.Property("reference_number", th.StringType),
-        th.Property("is_update_customer", th.BooleanType),
+        th.Property("is_discount_before_tax", th.BooleanType),
         th.Property("date", th.DateTimeType),
         th.Property("exchange_rate", th.NumberType),
         th.Property("is_inclusive_tax", th.BooleanType),
@@ -2164,73 +2166,6 @@ class ReportAccountTransactionsStream(ZohoBooksStream):
         th.Property("branch", th.CustomType({"type": ["object", "string"]})),
     ).to_dict()
 
-class AdvancedAccountTransactionsStream(ZohoBooksStream):
-    name = "advanced_account_transactions"
-    path = "/reports/accounttransaction"
-    primary_keys = None
-    replication_key = None
-    records_jsonpath: str = "$.account_transactions[:1].account_transactions[*]"
-    parent_stream_type = OrganizationIdStream
-
-    schema = th.PropertiesList(
-        th.Property("date", th.DateTimeType),
-        th.Property("account_name", th.StringType),
-        th.Property("transaction_details", th.StringType),
-        th.Property("transaction_id", th.StringType),
-        th.Property("reference_transaction_id", th.StringType),
-        th.Property("offset_account_id", th.StringType),
-        th.Property("offset_account_type", th.StringType),
-        th.Property("transaction_type", th.StringType),
-        th.Property("reference_number", th.StringType),
-        th.Property("entity_number", th.StringType),
-        th.Property("debit", th.CustomType({"type": ["number", "string"]})),
-        th.Property("credit", th.CustomType({"type": ["number", "string"]})),
-        th.Property("net_amount", th.StringType),
-        th.Property("contact_id", th.StringType),
-        th.Property("account_id", th.StringType),
-        th.Property("project_ids", th.StringType),
-        th.Property("currency_code", th.StringType),
-        th.Property("account", th.ObjectType(
-            th.Property("account_group", th.StringType),
-            th.Property("account_type", th.StringType),
-        )),
-        th.Property("reporting_tag", th.StringType),
-        th.Property("branch", th.CustomType({"type": ["object", "string"]})),
-        th.Property("group_name", th.StringType),
-        th.Property("group_name_formatted", th.StringType),
-    ).to_dict()
-
-    def get_child_context(self, record: dict, context: Optional[dict]) -> dict:
-        return {
-            "organization_id": context.get("organization_id"),
-        }
-
-    def get_url_params(self, context, next_page_token):
-        metadata_base_url = self.url_base + "/reports/metadata"
-        params = {
-            "organization_id": context.get("organization_id"),
-            "switch_name_to_id": "true",
-            "entity_type": "account_transactions"
-        }
-        
-        req = requests.Request(
-            "GET",
-            metadata_base_url,
-            params=params,
-            headers=self.authenticator.auth_headers
-        )
-        detail_response = self._request(req.prepare())
-        meta_data = detail_response.json()
-        branches = []
-        for row in meta_data['entity_fields']:
-            if row.get('field_name_formatted') == 'Branch':
-                branches = [(item['name'], item['id']) for item in row['values']]
-        
-        for name, id in branches:
-            self.logger.info(f"Name: {name}, ID: {id}")
-
-        return super().get_url_params(context, next_page_token)
-                
 
 class ProfitAndLossCashStream(ProfitAndLossStream):
     name = "profit_and_loss_cash_based"
