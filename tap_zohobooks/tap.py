@@ -35,7 +35,6 @@ from tap_zohobooks.streams import (
     ReportAccountTransactionsStream,
     ProfitAndLossCashStream,
     ReportAccountTransactionsCashStream,
-    AdvancedAccountTransactionsStream,
 )
 
 STREAM_TYPES = [
@@ -68,7 +67,6 @@ STREAM_TYPES = [
     ReportAccountTransactionsStream,
     ProfitAndLossCashStream,
     ReportAccountTransactionsCashStream,
-    AdvancedAccountTransactionsStream,
 ]
 
 
