@@ -165,7 +165,8 @@ class JournalStream(ZohoBooksStream):
 class ChartOfAccountsStream(ZohoBooksStream):
     name = "chart_of_accounts"
     path = "/chartofaccounts?filter_by=AccountType.All"
-    primary_keys = ["account_id"]
+    primary_keys = None
+    replication_key = None
     records_jsonpath: str = "$.chartofaccounts[*]"
     parent_stream_type = OrganizationIdStream
 
@@ -1811,7 +1812,8 @@ class EstimatesDetailsStream(ZohoBooksStream):
 class AccountTransactionsStream(ZohoBooksStream):
     name = "account_transactions"
     path = "/chartofaccounts/transactions"
-    primary_keys = ["transaction_id"]
+    primary_keys = None
+    replication_key = None
     records_jsonpath: str = "$.transactions[*]"
     parent_stream_type = ChartOfAccountsStream
 
@@ -2171,4 +2173,4 @@ class ProfitAndLossCashStream(ProfitAndLossStream):
     name = "profit_and_loss_cash_based"
 
 class ReportAccountTransactionsCashStream(ReportAccountTransactionsStream):
-    name = "report_account_transactions_cash_based"
+    name = "report_sactions_cash_based"
