@@ -1812,7 +1812,7 @@ class EstimatesDetailsStream(ZohoBooksStream):
 class AccountTransactionsStream(ZohoBooksStream):
     name = "account_transactions"
     path = "/chartofaccounts/transactions"
-    primary_keys = None
+    primary_keys = ['account_id']
     replication_key = None
     records_jsonpath: str = "$.transactions[*]"
     parent_stream_type = ChartOfAccountsStream
