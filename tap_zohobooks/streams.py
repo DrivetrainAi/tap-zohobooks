@@ -1816,7 +1816,7 @@ class AccountTransactionsStream(ZohoBooksStream):
     parent_stream_type = ChartOfAccountsStream
 
     schema = th.PropertiesList(
-        th.Property("transaction_id", th.StringType),
+        th.Property("transaction_id", th.IntegerType),
         th.Property("transaction_date", th.DateType),
         th.Property("categorized_transaction_id", th.StringType),
         th.Property("transaction_type", th.StringType),
